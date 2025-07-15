@@ -58,7 +58,7 @@ public static class EndpointHelper
     public static List<Query>? GetEndpointQueries(Endpoint endpoint)
     {
         var result = new List<Query>();
-        var querySection = GetSection(endpoint, EndpointTokens.Sections.Query.Name);
+        var querySection = GetSection(endpoint, AppConstants.Sections.Query.Name);
         if (querySection is null)
         {
             return null;
@@ -77,7 +77,7 @@ public static class EndpointHelper
     public static List<Cookie>? GetEndpointCookies(Endpoint endpoint)
     {
         var result = new List<Cookie>();
-        var cookiesSection = GetSection(endpoint, EndpointTokens.Sections.Cookies.Name);
+        var cookiesSection = GetSection(endpoint, AppConstants.Sections.Cookies.Name);
         if (cookiesSection is null)
         {
             return null;
@@ -96,7 +96,7 @@ public static class EndpointHelper
     public static List<Header> GetEndpointHeaders(Endpoint endpoint)
     {
         var result = new List<Header>();
-        var headerSection = GetSection(endpoint, EndpointTokens.Sections.Headers.Name);
+        var headerSection = GetSection(endpoint, AppConstants.Sections.Headers.Name);
         if (headerSection is null)
         {
             throw new Exception($"endpoint '{endpoint.Name}' does not have headers");
@@ -115,7 +115,7 @@ public static class EndpointHelper
     public static List<BodyEntry> GetEndpointBody(Endpoint endpoint)
     {
         var result = new List<BodyEntry>();
-        var bodySection = GetSection(endpoint, EndpointTokens.Sections.Body.Name);
+        var bodySection = GetSection(endpoint, AppConstants.Sections.Body.Name);
         if (bodySection is null)
         {
             throw new Exception($"endpoint '{endpoint.Name}' does not have a body");
@@ -134,7 +134,7 @@ public static class EndpointHelper
     public static string GetEndpointUrl(Endpoint endpoint)
     {
         var infoSection = GetInfoSection(endpoint);
-        var urlParameter = infoSection.Parameters.Where(x => x.Name == EndpointTokens.Sections.Info.Parameters.Url).FirstOrDefault();
+        var urlParameter = infoSection.Parameters.Where(x => x.Name == AppConstants.Sections.Info.Parameters.Url).FirstOrDefault();
         if (urlParameter is null)
         {
             throw new Exception($"in endpoint {endpoint.Name} in info section, url is not defined");
@@ -145,7 +145,7 @@ public static class EndpointHelper
     public static EndpointMethod GetEndpointMethod(Endpoint endpoint)
     {
         var infoSection = GetInfoSection(endpoint);
-        var methodParameter = infoSection.Parameters.Where(x => x.Name == EndpointTokens.Sections.Info.Parameters.Method).FirstOrDefault();
+        var methodParameter = infoSection.Parameters.Where(x => x.Name == AppConstants.Sections.Info.Parameters.Method).FirstOrDefault();
         if (methodParameter is null)
         {
             throw new Exception($"in endpoint {endpoint.Name} in info section, method is not defined!");
@@ -159,7 +159,7 @@ public static class EndpointHelper
     
     public static Section GetInfoSection(Endpoint endpoint)
     {
-        var infoSection = GetSection(endpoint, EndpointTokens.Sections.Info.Name);
+        var infoSection = GetSection(endpoint, AppConstants.Sections.Info.Name);
         if (infoSection is null)
         {
             throw new Exception($"in endpoint {endpoint.Name} info section does not exists");
@@ -178,7 +178,7 @@ public static class EndpointHelper
     public static string? GetInfoName(Endpoint endpoint)
     {
         var infoSection = GetInfoSection(endpoint);
-        var nameParameter = infoSection.Parameters.Where(x => x.Name == EndpointTokens.Sections.Info.Parameters.EndpointName).FirstOrDefault();
+        var nameParameter = infoSection.Parameters.Where(x => x.Name == AppConstants.Sections.Info.Parameters.EndpointName).FirstOrDefault();
         if (nameParameter is null)
         {
             return null;

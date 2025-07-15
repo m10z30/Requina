@@ -1,7 +1,17 @@
 namespace Requina.Common.Constants;
 
-public static class EndpointTokens
+public static class AppConstants
 {
+    public static class VariableConstants
+    {
+        public static string BaseDirectory { get; set; } = Directory.GetCurrentDirectory();
+    }
+
+    public static class Environments
+    {
+        public static readonly string EnvironmentDirectory = Path.Join(VariableConstants.BaseDirectory, "environments"); 
+    }
+
     public static class Sections
     {
         public static class Info

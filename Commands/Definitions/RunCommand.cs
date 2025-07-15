@@ -1,7 +1,9 @@
 using System.Text.RegularExpressions;
 using CommandLine;
+using Requina.Common.Constants;
 using Requina.Common.Extensions;
 using Requina.Core.Endpoints.Helpers;
+using Requina.Core.Environments.Helpers;
 using Requina.Helpers.Commands;
 
 namespace Requina.Commands.Definitions;
@@ -20,8 +22,16 @@ public static class RunCommand
 {
     public static async Task<int> Execute(RunOptions options)
     {
-        var endpoint = EndpointHelper.GetEndpoint("/Users/mohammedzohair/personal/exampleRequinaProject/src/something.ren");
-        endpoint.PrintObject();
+        AppConstants.VariableConstants.BaseDirectory = string.IsNullOrWhiteSpace(options.Directory) ? Directory.GetCurrentDirectory() : options.Directory;
+
+        var envs = EnvHelper.GetEnvironments();
+        foreach (var env in envs)
+        {
+            // var values = env.Values;
+            env.PrintObject();
+        }
+        // var endpoint = EndpointHelper.GetEndpoint("/Users/mohammedzohair/personal/exampleRequinaProject/src/something.ren");
+        // endpoint.PrintObject();
         await Task.CompletedTask;
         // ReadEndpoint();
         return 0;
