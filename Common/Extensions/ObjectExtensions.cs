@@ -7,11 +7,11 @@ public static class ObjectExtensions
 {
     public static void PrintObject(this object obj, int indent = 0, HashSet<object>? visited = null)
     {
-        visited ??= new HashSet<object>();
+        visited ??= [];
 
         if (obj == null)
         {
-            Console.WriteLine($"{Indent(indent)}null");
+            Console.WriteLine($"null");
             return;
         }
 
@@ -19,7 +19,7 @@ public static class ObjectExtensions
 
         if (!type.IsValueType && visited.Contains(obj))
         {
-            Console.WriteLine($"{Indent(indent)}(circular reference to {type.Name})");
+            Console.WriteLine($"{obj}  (circular reference)");
             return;
         }
 
@@ -30,14 +30,20 @@ public static class ObjectExtensions
         if (type.IsPrimitive || obj is string || obj is DateTime || obj is decimal)
         {
             string output = obj.ToString()?.Replace("\n", "\\n").Replace("\r", "\\r") ?? "null";
-            Console.WriteLine($"{Indent(indent)}{output}");
+            Console.WriteLine($"{output}");
+            return;
+        }
+
+        if (type.IsEnum)
+        {
+            Console.WriteLine($"{obj} (enum)");
             return;
         }
 
         // Handle IEnumerable
         if (obj is IEnumerable enumerable && !(obj is string))
         {
-            Console.WriteLine($"{Indent(indent)}[");
+            Console.WriteLine($"[");
             foreach (var item in enumerable)
             {
                 item.PrintObject(indent + 2, visited);
@@ -69,5 +75,5 @@ public static class ObjectExtensions
         Console.WriteLine($"{Indent(indent)}}}");
     }
 
-    private static string Indent(int level) => new string(' ', level);
+    private static string Indent(int level) => new string(' ', level * 2);
 }
