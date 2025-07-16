@@ -2,6 +2,12 @@ namespace Requina.Common.Constants;
 
 public static class AppConstants
 {
+    public static class Directories
+    {
+        public static readonly string Source = "src";
+        public static readonly string Environments = "environments";
+    }
+
     public static class VariableConstants
     {
         public static string BaseDirectory { get; set; } = Directory.GetCurrentDirectory();

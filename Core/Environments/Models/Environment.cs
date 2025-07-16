@@ -5,7 +5,13 @@ namespace Requina.Core.Environments.Models;
 public class Environment
 {
     public required string FilePath { get; set; }
-    public string FileName => Path.GetFileName(FilePath);
-    public string Name => Path.GetFileNameWithoutExtension(FilePath);
-    public Dictionary<string, string> Values => EnvHelper.GetValues(FilePath);
+    public required string FileName { get; set; }
+    public required string Name { get; set; }
+    public required List<EnvValue> Values { get; set; }
+}
+
+public class EnvValue
+{
+    public required string Name { get; set; }
+    public required string Value { get; set; }
 }

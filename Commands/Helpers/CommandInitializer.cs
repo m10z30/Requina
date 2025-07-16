@@ -18,11 +18,12 @@ public static class CommandInitializer
             with.CaseSensitive = false;
         });
 
-        var result = parser.ParseArguments<InitOptions, RunOptions>(args);
+        var result = parser.ParseArguments<InitOptions, RunOptions, ListOptions>(args);
 
         return await result.MapResult(
             (InitOptions opts) => InitCommand.Execute(opts),
             (RunOptions opts) => RunCommand.Execute(opts),
+            (ListOptions opts) => ListCommand.Execute(opts),
             errs => Task.FromResult(1)
         );
     }

@@ -1,8 +1,6 @@
-using System.Text.RegularExpressions;
 using CommandLine;
 using Requina.Common.Constants;
 using Requina.Common.Extensions;
-using Requina.Core.Endpoints.Helpers;
 using Requina.Core.Environments.Helpers;
 using Requina.Helpers.Commands;
 
@@ -25,6 +23,7 @@ public static class RunCommand
         AppConstants.VariableConstants.BaseDirectory = string.IsNullOrWhiteSpace(options.Directory) ? Directory.GetCurrentDirectory() : options.Directory;
 
         var envs = EnvHelper.GetEnvironments();
+        Console.WriteLine($"values: {envs.First().Values.Count}");
         foreach (var env in envs)
         {
             // var values = env.Values;
