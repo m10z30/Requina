@@ -1,47 +1,10 @@
 using Requina.Common.Constants;
-using Requina.Core.Environments.Helpers;
 using Requina.Core.Projects.Models;
 
 namespace Requina.Core.Projects.Helpers;
 
 public static class ProjectHelper
 {
-
-    public static void PrintProjectStructure(string directory)
-    {
-        var name = Path.GetFileName(directory);
-        var structure = GetProjectStructure(directory);
-        Console.WriteLine($"|- {name}");
-        PrintEnvironments(structure.EnvironmentDirectory);
-        PrintProjectDirectory(structure.SourceContent);
-    }
-
-    private static void PrintProjectDirectory(ProjectDirectory projectDirectory, int depth = 0)
-    {
-        string indent = "|" + string.Concat(Enumerable.Repeat("-", depth + 2));
-        string fileIndent = "|" + string.Concat(Enumerable.Repeat("-", depth + 3));
-        Console.WriteLine($"{indent} {Path.GetFileName(projectDirectory.Path)}");
-        foreach (var file in projectDirectory.EndpointFiles)
-        {
-            Console.WriteLine($"{fileIndent} {Path.GetFileName(file)}");
-        }
-        depth += 1;
-        foreach (var dir in projectDirectory.Directories)
-        {
-            PrintProjectDirectory(dir, depth);
-        }
-    }
-
-    private static void PrintEnvironments(string dir)
-    {
-        var envs = EnvHelper.GetEnvironments();
-        Console.WriteLine($"|-- {Path.GetFileName(dir)}");
-        foreach (var env in envs)
-        {
-            Console.WriteLine($"|--- {env.FileName}");
-        }
-    }
-
     public static ProjectStructure GetProjectStructure(string directory)
     {
         var directories = GetDirectories(directory);

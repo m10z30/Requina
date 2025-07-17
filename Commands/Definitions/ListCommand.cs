@@ -19,7 +19,8 @@ public static class ListCommand
     public static async Task<int> Execute(ListOptions options)
     {
         AppConstants.VariableConstants.BaseDirectory = string.IsNullOrWhiteSpace(options.Directory) ? Directory.GetCurrentDirectory() : options.Directory;
-        ProjectHelper.PrintProjectStructure(AppConstants.VariableConstants.BaseDirectory);
+        ProjectPrintHelper.PrintProjectStructure(AppConstants.VariableConstants.BaseDirectory);
+        await Task.CompletedTask;
         return 0;
     }
 }
