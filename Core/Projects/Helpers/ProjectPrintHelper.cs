@@ -5,50 +5,49 @@ namespace Requina.Core.Projects.Helpers;
 
 public static class ProjectPrintHelper
 {
-    public static string GetIndent(int indent, bool more = true)
-    {
-        if (indent == 0)
-        {
-            return "|-- ";
-        }
-        if (more)
-        {
-            return "|" + string.Concat(Enumerable.Repeat(" ", indent * 3)) + "|-- ";
-        }
-        return " " + string.Concat(Enumerable.Repeat(" ", indent * 3)) + "|-- ";
-    }
     public static void PrintProjectStructure(string directory)
     {
         var name = Path.GetFileName(directory);
         var structure = ProjectHelper.GetProjectStructure(directory);
-        Console.WriteLine($"{name}");
-        Console.WriteLine("|");
-        PrintEnvironments(structure.EnvironmentDirectory);
-        PrintProjectDirectory(structure.SourceContent, 0, false);
+        Console.WriteLine(name);
+        PrintEnvironments(structure.EnvironmentDirectory, "├── ");
+        PrintProjectDirectory(structure.SourceContent, "", true);
     }
 
-    private static void PrintProjectDirectory(ProjectDirectory projectDirectory, int depth, bool more)
+    private static void PrintProjectDirectory(ProjectDirectory projectDirectory, string indent, bool isLast)
     {
-        var moreDirectories = projectDirectory.Directories.Length > 0;
-        Console.WriteLine($"{GetIndent(depth, more)}{Path.GetFileName(projectDirectory.Path)}");
-        foreach (var file in projectDirectory.EndpointFiles)
+        var branch = isLast ? "└── " : "├── ";
+        Console.WriteLine($"{indent}{branch}{Path.GetFileName(projectDirectory.Path)}");
+
+        var subIndent = indent + (isLast ? "    " : "│   ");
+
+        var files = projectDirectory.EndpointFiles;
+        for (int i = 0; i < files.Length; i++)
         {
-            Console.WriteLine($"{GetIndent(depth + 1, more)}{Path.GetFileName(file)}");
+            var fileBranch = (i == files.Length - 1 && projectDirectory.Directories.Length == 0) ? "└── " : "├── ";
+            Console.WriteLine($"{subIndent}{fileBranch}{Path.GetFileName(files[i])}");
         }
-        depth += 1;
-        foreach (var dir in projectDirectory.Directories)
+
+        for (int i = 0; i < projectDirectory.Directories.Length; i++)
         {
-            PrintProjectDirectory(dir, depth, moreDirectories);
+            var dir = projectDirectory.Directories[i];
+            bool isDirLast = i == projectDirectory.Directories.Length - 1;
+            PrintProjectDirectory(dir, subIndent, isDirLast);
         }
     }
 
-    private static void PrintEnvironments(string dir)
+    private static void PrintEnvironments(string dir, string prefix)
     {
         var envs = EnvHelper.GetEnvironments();
-        Console.WriteLine($"{GetIndent(0)}{Path.GetFileName(dir)}");
-        foreach (var env in envs)
+        Console.WriteLine($"{prefix}{Path.GetFileName(dir)}");
+
+        for (int i = 0; i < envs.Count; i++)
         {
-            Console.WriteLine($"{GetIndent(1)}{env.FileName}");
+            var isLast = i == envs.Count - 1;
+            var branch = isLast ? "└── " : "├── ";
+            var indent = prefix.Replace("── ", "   ").Replace("├", "│");
+            Console.WriteLine($"{indent}{branch}{envs[i].FileName}");
         }
     }
 }
+
