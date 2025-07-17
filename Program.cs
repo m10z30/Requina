@@ -4,7 +4,17 @@ class Program
 {
     static async Task<int> Main(string[] args)
     {
-        return await CommandInitializer.Execute(args);
+        try
+        {
+            return await CommandInitializer.Execute(args);
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("error: ");
+            Console.WriteLine(ex.Message);
+            return 1;
+        }
     }
 }
 

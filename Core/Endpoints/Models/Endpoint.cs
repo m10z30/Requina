@@ -19,10 +19,10 @@ public class Endpoint
 {
     public required string FilePath { get; set; }
     public required string FileName { get; set; }
-    public string Name => Path.GetFileNameWithoutExtension(FilePath);
+    public string Name => InfoName ?? Path.GetFileName(FilePath);
     public string? InfoName => EndpointHelper.GetInfoName(this);
     public required string Content { get; set; }
-    public List<Section> Sections => SectionHelper.GetSections(Content);
+    public required List<Section> Sections { get; set; }
     public EndpointDetails Details => EndpointHelper.GetDetails(this);
 }
 

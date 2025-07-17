@@ -1,22 +1,61 @@
 using Requina.Common.Constants;
 using Requina.Core.Endpoints.Models;
+using Requina.Core.Projects.Helpers;
+using Requina.Core.Projects.Models;
+using Requina.Core.Sections.Helpers;
 using Requina.Core.Sections.Models;
 
 namespace Requina.Core.Endpoints.Helpers;
 
 public static class EndpointHelper
 {
+    public static List<Endpoint> GetEndpoints()
+    {
+        var projectStructure = ProjectHelper.GetProjectStructure(AppConstants.VariableConstants.BaseDirectory);
+        var endpoints = GetAllEndpointsInDirectory(projectStructure.SourceContent);
+        var duplicates = endpoints
+            .Select(x => x.Name)
+            .GroupBy(x => x)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key)
+            .ToList();
+        if (duplicates.Count != 0)
+        {
+            var message = $@"Duplicate endpoint names found: {string.Join(", ", duplicates)}
+please make sure no two endpoints are the same name, this helps when running a single endpoint
+you can specify the name of the endpoint inside the 'info' section with the parameter 'name'";
+            throw new Exception(message);
+        }
+        return endpoints;
+    }
+
+    public static List<Endpoint> GetAllEndpointsInDirectory(ProjectDirectory directory)
+    {
+        var endpoints = new List<Endpoint>();
+        foreach (var file in directory.EndpointFiles)
+        {
+            endpoints.Add(GetEndpoint(file));
+        }
+        foreach (var dir in directory.Directories)
+        {
+            endpoints.AddRange(GetAllEndpointsInDirectory(dir));
+        }
+        return endpoints;
+    }
+
     public static Endpoint GetEndpoint(string filePath)
     {
         if (!File.Exists(filePath))
         {
             throw new Exception($"file {filePath} does not exists");
         }
+        var content = File.ReadAllText(filePath);
         return new()
         {
             FilePath = filePath,
             FileName = Path.GetFileName(filePath),
-            Content = File.ReadAllText(filePath),
+            Content = content,
+            Sections = SectionHelper.GetSections(content)
         };
     }
 
@@ -183,6 +222,6 @@ public static class EndpointHelper
         {
             return null;
         }
-        return nameParameter.Content; 
+        return nameParameter.Content.Trim(); 
     }
 }
