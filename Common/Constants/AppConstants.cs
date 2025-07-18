@@ -47,7 +47,9 @@ public static class AppConstants
 
         public static class Body
         {
-            public static readonly string Name = "body";
+            public static readonly string JsonName = "body";
+            public static readonly string FormName = "form";
+            public static readonly string XFormName = "xform";
         }
     }
 }

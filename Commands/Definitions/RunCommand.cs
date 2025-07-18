@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Threading.Tasks;
 using CommandLine;
 using Requina.Common.Constants;
 using Requina.Common.Extensions;
@@ -27,7 +28,7 @@ public static class RunCommand
         var activeEnv = EnvHelper.GetActiveEnvironment();
         if (!string.IsNullOrWhiteSpace(options.Endpoint))
         {
-            return RunEndpoint(options.Endpoint);
+            return await RunEndpoint(options.Endpoint);
         }
         // await RequestHelper.LogRequestAsync("Test", EndpointMethod.POST, "/api/stuff", async () =>
         // {
@@ -54,14 +55,14 @@ public static class RunCommand
         return 0;
     }
 
-    private static int RunEndpoint(string name)
+    private static async Task<int> RunEndpoint(string name)
     {
         var endpoint = EndpointHelper.GetEndpointByName(name);
         if (endpoint == null)
         {
             throw new Exception("no endpoint with this name");
         }
-        endpoint.PrintObject();
+        await RequestHelper.Request(endpoint);
         return 0;
     }
 }

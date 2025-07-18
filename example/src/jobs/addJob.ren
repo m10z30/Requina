@@ -1,0 +1,13 @@
+# info
+name: addJob 
+url: {baseUrl}/jobs
+method: Post 
+
+# headers
+X-Business-Id: {businessId} 
+
+# body
+{
+    "name": "somethign",
+    "some": "thing"
+}

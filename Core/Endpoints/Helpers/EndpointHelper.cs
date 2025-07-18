@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Requina.Common.Constants;
 using Requina.Core.Endpoints.Models;
 using Requina.Core.Environments.Helpers;
@@ -162,23 +163,96 @@ you can specify the name of the endpoint inside the 'info' section with the para
         return result;
     }
 
-    public static List<BodyEntry> GetEndpointBody(Endpoint endpoint)
+    public static Body GetEndpointBody(Endpoint endpoint)
     {
-        var result = new List<BodyEntry>();
-        var bodySection = GetSection(endpoint, AppConstants.Sections.Body.Name);
-        if (bodySection is null)
+        var jsonSection = GetSection(endpoint, AppConstants.Sections.Body.JsonName);
+        var formSection = GetSection(endpoint, AppConstants.Sections.Body.FormName);
+        var xformSection = GetSection(endpoint, AppConstants.Sections.Body.XFormName);
+        var sections = 0;
+        if (jsonSection is not null)
         {
-            throw new Exception($"endpoint '{endpoint.Name}' does not have a body");
+            sections += 1;
         }
-        foreach (var parameter in bodySection.Parameters)
+        if (formSection is not null)
         {
-            result.Add(new()
+            sections += 1;
+        }
+        if (xformSection is not null)
+        {
+            sections += 1;
+        }
+        if (sections == 0)
+        {
+            var message = $"endpoint '{endpoint.Name}' does not have a body";
+            message += "\ndecide between these sections:";
+            message += "\n# body: for json body";
+            message += "\n# form: for multipart/form-data";
+            message += "\n# xform: for application/x-www-form-urlencoded";
+            throw new Exception(message);
+        }
+        else if (sections == 2 || sections == 3)
+        {
+            var message = $"endpoint '{endpoint.Name}' have multipe types of body";
+            message += "\ndecide between these sections:";
+            message += "\n# body: for json body";
+            message += "\n# form: for multipart/form-data";
+            message += "\n# xform: for application/x-www-form-urlencoded";
+            throw new Exception(message);
+        }
+        if (jsonSection is not null)
+        {
+            var json = true;
+            var content = jsonSection.Content.Trim();
+            try
+                {
+                    JsonDocument.Parse(content);
+                    json = true;
+                }
+                catch
+                {
+                    json = false;
+                }
+            return new()
             {
-                Name = parameter.Name,
-                Value = parameter.Content
-            });
+                Type = json ? BodyType.Json : BodyType.Text,
+                Content = content,
+            };
         }
-        return result;
+        if (formSection is not null)
+        {
+            var result = new List<BodyEntry>();
+            foreach (var parameter in formSection.Parameters)
+            {
+                result.Add(new()
+                {
+                    Name = parameter.Name,
+                    Value = parameter.Content
+                });
+            }
+            return new()
+            {
+                Type = BodyType.FormData,
+                Entries = result,
+            };
+        }
+        if (xformSection is not null)
+        {
+            var result = new List<BodyEntry>();
+            foreach (var parameter in xformSection.Parameters)
+            {
+                result.Add(new()
+                {
+                    Name = parameter.Name,
+                    Value = parameter.Content
+                });
+            }
+            return new()
+            {
+                Type = BodyType.XFormData,
+                Entries = result,
+            };
+        }
+        throw new Exception("this should not happen, the body should have been returned");
     }
 
     public static string GetEndpointUrl(Endpoint endpoint)

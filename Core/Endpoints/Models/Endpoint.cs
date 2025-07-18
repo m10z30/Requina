@@ -1,5 +1,4 @@
 using Requina.Core.Endpoints.Helpers;
-using Requina.Core.Sections.Helpers;
 using Requina.Core.Sections.Models;
 
 namespace Requina.Core.Endpoints.Models;
@@ -32,7 +31,7 @@ public class EndpointDetails
     public string Url { get; set; } = string.Empty;
     public EndpointMethod Method { get; set; }
     public List<Header> Headers { get; set; } = new();
-    public List<BodyEntry>? Body { get; set; }
+    public Body? Body { get; set; }
     public List<Query>? Queries { get; set; }
     public List<Cookie>? Cookies { get; set; }
 }
@@ -41,6 +40,21 @@ public class Header
 {
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
+}
+
+public enum BodyType
+{
+    Json,
+    Text,
+    FormData,
+    XFormData
+}
+
+public class Body
+{
+    public BodyType Type { get; set; }
+    public string? Content { get; set; }
+    public List<BodyEntry>? Entries { get; set; }
 }
 
 public class BodyEntry
