@@ -32,6 +32,10 @@ public static class SectionHelper
         var lines = content.Split("\n");
         foreach (var line in lines)
         {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
             if (!line.Contains(':'))
             {
                 throw new Exception($"parameter should have a ':' delimiter, the following line: {line}");

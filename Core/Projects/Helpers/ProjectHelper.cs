@@ -46,6 +46,9 @@ public static class ProjectHelper
 
     public static string[] GetEndpointsFiles(string directory)
     {
-        return Directory.GetFiles(directory);
+        var files = Directory.GetFiles(directory);
+            // .Where(x => Path.GetExtension(x) == "." + AppConstants.Endpoints.FileExtension)
+            // .ToArray();
+        return files;
     }
 }

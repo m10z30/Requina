@@ -1,0 +1,8 @@
+# info
+name: getCategories 
+url: {baseUrl}/categories
+method: Get 
+
+# headers
+
+# query

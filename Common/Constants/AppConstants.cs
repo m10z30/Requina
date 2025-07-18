@@ -18,6 +18,11 @@ public static class AppConstants
         public static readonly string EnvironmentDirectory = Path.Join(VariableConstants.BaseDirectory, "environments"); 
     }
 
+    public static class Endpoints
+    {
+        public static readonly string FileExtension = "ren";
+    }
+
     public static class Sections
     {
         public static class Info
