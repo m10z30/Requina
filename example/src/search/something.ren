@@ -1,6 +1,6 @@
 # info
-name: some name
-url: {url}/stuff
+name: getSomething
+url: {baseUrl}/stuff
 method: Get 
 
 # headers

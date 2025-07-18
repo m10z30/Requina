@@ -24,8 +24,11 @@ public static class RunCommand
     public static async Task<int> Execute(RunOptions options)
     {
         AppConstants.VariableConstants.BaseDirectory = string.IsNullOrWhiteSpace(options.Directory) ? Directory.GetCurrentDirectory() : options.Directory;
-
         var activeEnv = EnvHelper.GetActiveEnvironment();
+        if (!string.IsNullOrWhiteSpace(options.Endpoint))
+        {
+            return RunEndpoint(options.Endpoint);
+        }
         // await RequestHelper.LogRequestAsync("Test", EndpointMethod.POST, "/api/stuff", async () =>
         // {
         //     await Task.Delay(1000);
@@ -48,6 +51,17 @@ public static class RunCommand
         // endpoint.PrintObject();
         await Task.CompletedTask;
         // ReadEndpoint();
+        return 0;
+    }
+
+    private static int RunEndpoint(string name)
+    {
+        var endpoint = EndpointHelper.GetEndpointByName(name);
+        if (endpoint == null)
+        {
+            throw new Exception("no endpoint with this name");
+        }
+        endpoint.PrintObject();
         return 0;
     }
 }

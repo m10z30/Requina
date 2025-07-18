@@ -22,6 +22,7 @@ public class Endpoint
     public string Name => InfoName ?? Path.GetFileName(FilePath);
     public string? InfoName => EndpointHelper.GetInfoName(this);
     public required string Content { get; set; }
+    public required string RenderedContent { get; set; }
     public required List<Section> Sections { get; set; }
     public EndpointDetails Details => EndpointHelper.GetDetails(this);
 }

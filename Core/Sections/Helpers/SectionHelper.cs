@@ -37,14 +37,16 @@ public static class SectionHelper
                 throw new Exception($"parameter should have a ':' delimiter, the following line: {line}");
             }
             var variables = line.Split(":");
-            if (variables.Length != 2)
+            if (variables.Length < 2)
             {
                 throw new Exception($"the format for a parameter should be: name: value, the following line: {line}");
             }
+            var name = variables[0];
+            var value = string.Join(":", variables.Where(x => x != name));
             var parameter = new SectionParameter
             {
-                Name = variables[0],
-                Content = variables[1]
+                Name = name,
+                Content = value
             };
             parameters.Add(parameter);
         }

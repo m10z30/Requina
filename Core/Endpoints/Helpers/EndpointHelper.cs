@@ -1,5 +1,6 @@
 using Requina.Common.Constants;
 using Requina.Core.Endpoints.Models;
+using Requina.Core.Environments.Helpers;
 using Requina.Core.Projects.Helpers;
 using Requina.Core.Projects.Models;
 using Requina.Core.Sections.Helpers;
@@ -9,6 +10,14 @@ namespace Requina.Core.Endpoints.Helpers;
 
 public static class EndpointHelper
 {
+
+    public static Endpoint? GetEndpointByName(string name)
+    {
+        var endpoints = GetEndpoints();
+        var endpoint = endpoints.Where(x => x.Name == name).FirstOrDefault();
+        return endpoint;
+    }
+
     public static List<Endpoint> GetEndpoints()
     {
         var projectStructure = ProjectHelper.GetProjectStructure(AppConstants.VariableConstants.BaseDirectory);
@@ -50,12 +59,14 @@ you can specify the name of the endpoint inside the 'info' section with the para
             throw new Exception($"file {filePath} does not exists");
         }
         var content = File.ReadAllText(filePath);
+        var renderedContent = EnvHelper.RenderContent(content);
         return new()
         {
             FilePath = filePath,
             FileName = Path.GetFileName(filePath),
             Content = content,
-            Sections = SectionHelper.GetSections(content)
+            RenderedContent = renderedContent,
+            Sections = SectionHelper.GetSections(renderedContent)
         };
     }
 

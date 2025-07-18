@@ -6,7 +6,7 @@ namespace Requina.Core.Environments.Helpers;
 public static class EnvHelper
 {
 
-    public static Models.Environment GetActiveEnvironment()
+    public static Models.Environment GetActiveEnvironment(bool message = true)
     {
         var envs = GetEnvironments();
         var activeEnvs = new List<Models.Environment>();
@@ -20,10 +20,16 @@ public static class EnvHelper
         if (activeEnvs.Count == 0)
         {
             var chosen = envs.First();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"no environment is active, the following is chosen as active: {chosen.Name}");
-            Console.WriteLine("please make sure the enviroment is active by writing '!active' or '!a' at the start of the file");
-            Console.ResetColor();
+            if (message)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"no environment is active, the following is chosen as active: {chosen.Name}");
+                Console.WriteLine("please make sure the enviroment is active by writing '!active' or '!a' at the start of the file");
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.WriteLine($"active environment: {chosen.Name}");
+                Console.ResetColor();
+            }
             return chosen;
         }
 
@@ -34,12 +40,20 @@ public static class EnvHelper
             var count = activeEnvs.Count;
             var msg = string.Join(", ", names);
             chosenEnv = activeEnvs.First();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"mutiple environments are active: [{msg}], '{chosenEnv.Name}' is chosen to be active.");
-            Console.WriteLine("please make sure the enviroment is active by writing '!active' or '!a' at the start of the file");
+            if (message)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"mutiple environments are active: [{msg}], '{chosenEnv.Name}' is chosen to be active.");
+                Console.WriteLine("please make sure the enviroment is active by writing '!active' or '!a' at the start of the file");
+                Console.ResetColor();
+            }
+        }
+        if (message)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine($"active environment: {chosenEnv.Name}");
             Console.ResetColor();
         }
-
         return chosenEnv;
     }
 
@@ -123,5 +137,15 @@ public static class EnvHelper
             });
         }
         return result;
+    }
+
+    public static string RenderContent(string content)
+    {
+        var activeEnv = GetActiveEnvironment(false);
+        foreach (var value in activeEnv.Values)
+        {
+            content = content.Replace('{' + value.Name + '}', value.Value);
+        }
+        return content;
     }
 }
