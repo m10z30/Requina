@@ -6,21 +6,91 @@ namespace Requina.Core.Environments.Helpers;
 public static class EnvHelper
 {
 
+    public static Models.Environment GetActiveEnvironment()
+    {
+        var envs = GetEnvironments();
+        var activeEnvs = new List<Models.Environment>();
+        foreach (var env in envs)
+        {
+            if (env.IsActive)
+            {
+                activeEnvs.Add(env);
+            }
+        }
+        if (activeEnvs.Count == 0)
+        {
+            var chosen = envs.First();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"no environment is active, the following is chosen as active: {chosen.Name}");
+            Console.WriteLine("please make sure the enviroment is active by writing '!active' or '!a' at the start of the file");
+            Console.ResetColor();
+            return chosen;
+        }
+
+        Models.Environment chosenEnv = activeEnvs.FirstOrDefault()!;
+        if (activeEnvs.Count > 1)
+        {
+            var names = activeEnvs.Select(x => x.Name).ToList();
+            var count = activeEnvs.Count;
+            var msg = string.Join(", ", names);
+            chosenEnv = activeEnvs.First();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"mutiple environments are active: [{msg}], '{chosenEnv.Name}' is chosen to be active.");
+            Console.WriteLine("please make sure the enviroment is active by writing '!active' or '!a' at the start of the file");
+            Console.ResetColor();
+        }
+
+        return chosenEnv;
+    }
+
     public static List<Models.Environment> GetEnvironments()
     {
         if (!Directory.Exists(AppConstants.Environments.EnvironmentDirectory))
         {
-            Directory.CreateDirectory(AppConstants.Environments.EnvironmentDirectory);
-            File.Create(Path.Join(AppConstants.Environments.EnvironmentDirectory, "default.env"));
+            throw new Exception("no 'environments' folder exists, please create one");
         }
         var files = Directory.GetFiles(AppConstants.Environments.EnvironmentDirectory);
+        if (files.Length == 0)
+        {
+            throw new Exception("no environments, please create one at least");
+        }
         return files.Select(x => new Models.Environment
         {
             FilePath = x,
             FileName = Path.GetFileName(x),
             Name = Path.GetFileNameWithoutExtension(x),
+            IsActive = IsEnvironmentActive(x),
             Values = GetValues(x)
         }).ToList();
+    }
+
+    public static bool IsEnvironmentActive(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            throw new Exception($"{filePath} environment file does not exists");
+        }
+        var lines = File.ReadAllLines(filePath);
+        string? firstLine = null; 
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+            firstLine = line;
+            break;
+        }
+        if (firstLine == null)
+        {
+            return false;
+        }
+        firstLine = firstLine.Trim().ToLower();
+        if (firstLine == "!active" || firstLine == "!a")
+        {
+            return true;
+        }
+        return false;
     }
 
     public static List<EnvValue> GetValues(string filePath)
@@ -33,7 +103,7 @@ public static class EnvHelper
         var lines = File.ReadAllLines(filePath);
         foreach (var line in lines)
         {
-            if (line.StartsWith('#'))
+            if (line.StartsWith('#') || line.StartsWith('!') || string.IsNullOrWhiteSpace(line))
             {
                 continue;
             }

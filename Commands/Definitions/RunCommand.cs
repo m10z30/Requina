@@ -1,6 +1,9 @@
+using System.Text.Json;
 using CommandLine;
 using Requina.Common.Constants;
 using Requina.Common.Extensions;
+using Requina.Core.Endpoints.Helpers;
+using Requina.Core.Endpoints.Models;
 using Requina.Core.Environments.Helpers;
 using Requina.Helpers.Commands;
 
@@ -22,14 +25,26 @@ public static class RunCommand
     {
         AppConstants.VariableConstants.BaseDirectory = string.IsNullOrWhiteSpace(options.Directory) ? Directory.GetCurrentDirectory() : options.Directory;
 
-        var envs = EnvHelper.GetEnvironments();
-        Console.WriteLine($"values: {envs.First().Values.Count}");
-        foreach (var env in envs)
-        {
-            // var values = env.Values;
-            env.PrintObject();
-        }
-        // var endpoint = EndpointHelper.GetEndpoint("/Users/mohammedzohair/personal/exampleRequinaProject/src/something.ren");
+        var activeEnv = EnvHelper.GetActiveEnvironment();
+        // await RequestHelper.LogRequestAsync("Test", EndpointMethod.POST, "/api/stuff", async () =>
+        // {
+        //     await Task.Delay(1000);
+        //     var response = new
+        //     {
+        //         Name = "somename",
+        //         Age = 25,
+        //     };
+        //     return (200, JsonSerializer.Serialize(response));
+        // });
+
+        // var envs = EnvHelper.GetEnvironments();
+        // Console.WriteLine($"values: {envs.First().Values.Count}");
+        // foreach (var env in envs)
+        // {
+        //     // var values = env.Values;
+        //     env.PrintObject();
+        // }
+        // // var endpoint = EndpointHelper.GetEndpoint("/Users/mohammedzohair/personal/exampleRequinaProject/src/something.ren");
         // endpoint.PrintObject();
         await Task.CompletedTask;
         // ReadEndpoint();

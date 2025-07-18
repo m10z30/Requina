@@ -13,6 +13,7 @@ class Program
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("error: ");
             Console.WriteLine(ex.Message);
+            Console.ResetColor();
             return 1;
         }
     }
