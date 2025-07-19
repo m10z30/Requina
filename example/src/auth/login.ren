@@ -1,0 +1,10 @@
+# info
+name: login
+url: {baseUrl}/auth/login
+method: Post
+
+# body
+{
+  "username": "{username}",
+  "password": "{password}"
+}

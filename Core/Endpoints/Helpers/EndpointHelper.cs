@@ -150,7 +150,7 @@ you can specify the name of the endpoint inside the 'info' section with the para
         var headerSection = GetSection(endpoint, AppConstants.Sections.Headers.Name);
         if (headerSection is null)
         {
-            throw new Exception($"endpoint '{endpoint.Name}' does not have headers");
+            return new();
         }
         foreach (var parameter in headerSection.Parameters)
         {

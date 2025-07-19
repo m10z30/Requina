@@ -1,0 +1,13 @@
+# info
+name: addCategory
+method: Post
+url: {baseUrl}/categories
+
+# headers
+Authorization: Bearer {accessToken}
+
+# body
+{
+  "name": "string",
+  "image": "string"
+}

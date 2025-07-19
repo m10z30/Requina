@@ -8,7 +8,7 @@ public static class SectionHelper
     public static List<Section> GetSections(string content)
     {
         // Match headers and content using regex
-        var matches = Regex.Matches(content, @"^# (.+)\n((?:.+\n?)*)", RegexOptions.Multiline);
+        var matches = Regex.Matches(content, @"^#(.+)\n((?:.+\n?)*)", RegexOptions.Multiline);
 
         var sections = new List<Section>();
 

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using System.Text;
 using System.Web;
 using Requina.Common.Helpers;
@@ -85,7 +86,10 @@ public static class RequestHelper
     private static async Task<HttpResponseMessage> JsonBodyRequestAsync(Endpoint endpoint)
     {
         using var client = new HttpClient();
-
+        foreach (var header in endpoint.Details.Headers)
+        {
+            client.DefaultRequestHeaders.Add(header.Name, header.Value);
+        }
         var content = new StringContent(endpoint.Details.Body!.Content!, Encoding.UTF8, GetRequestHeader(endpoint.Details.Body.Type));
         return endpoint.Details.Method switch
         {
@@ -99,7 +103,10 @@ public static class RequestHelper
     private static async Task<HttpResponseMessage> TextBodyRequestAsync(Endpoint endpoint)
     {
         using var client = new HttpClient();
-
+        foreach (var header in endpoint.Details.Headers)
+        {
+            client.DefaultRequestHeaders.Add(header.Name, header.Value);
+        }
         var content = new StringContent(endpoint.Details.Body!.Content!, Encoding.UTF8, GetRequestHeader(endpoint.Details.Body.Type));
         return endpoint.Details.Method switch
         {
@@ -119,6 +126,10 @@ public static class RequestHelper
         var directoryName = Path.GetDirectoryName(endpoint.FilePath);
         using var client = new HttpClient();
 
+        foreach (var header in endpoint.Details.Headers)
+        {
+            client.DefaultRequestHeaders.Add(header.Name, header.Value);
+        }
         var content = new MultipartFormDataContent();
         foreach (var data in endpoint.Details.Body.Entries)
         {
@@ -156,6 +167,10 @@ public static class RequestHelper
     {
         using var client = new HttpClient();
 
+        foreach (var header in endpoint.Details.Headers)
+        {
+            client.DefaultRequestHeaders.Add(header.Name, header.Value);
+        }
         if (endpoint.Details.Body is null || endpoint.Details.Body.Entries is null)
         {
             throw new Exception($"endpoint '{endpoint.Name}' does not have form data");
@@ -306,9 +321,10 @@ public static class RequestHelper
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.ForegroundColor = status >= 200 && status < 300 ? ConsoleColor.Green : ConsoleColor.Red;
             Console.Write($"[ {(status >= 200 && status < 300 ? "OK" : "ERR")} ]");
+            Console.Write($" {status} {(HttpStatusCode)status}");
             Console.ResetColor();
 
-            Console.Write($"  Status: {status}  Time: {sw.ElapsedMilliseconds} ms");
+            Console.Write($" Time: {sw.ElapsedMilliseconds} ms");
             Console.WriteLine();
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
