@@ -20,35 +20,18 @@ public static class RunCommand
 {
     public static async Task<int> Execute(RunOptions options)
     {
+        await Task.CompletedTask;
         AppConstants.VariableConstants.BaseDirectory = string.IsNullOrWhiteSpace(options.Directory) ? Directory.GetCurrentDirectory() : options.Directory;
-        var activeEnv = EnvHelper.GetActiveEnvironment();
+        EnvHelper.GetActiveEnvironment();
         if (!string.IsNullOrWhiteSpace(options.Endpoint))
         {
             return await RunEndpoint(options.Endpoint);
         }
-        // await RequestHelper.LogRequestAsync("Test", EndpointMethod.POST, "/api/stuff", async () =>
-        // {
-        //     await Task.Delay(1000);
-        //     var response = new
-        //     {
-        //         Name = "somename",
-        //         Age = 25,
-        //     };
-        //     return (200, JsonSerializer.Serialize(response));
-        // });
-
-        // var envs = EnvHelper.GetEnvironments();
-        // Console.WriteLine($"values: {envs.First().Values.Count}");
-        // foreach (var env in envs)
-        // {
-        //     // var values = env.Values;
-        //     env.PrintObject();
-        // }
-        // // var endpoint = EndpointHelper.GetEndpoint("/Users/mohammedzohair/personal/exampleRequinaProject/src/something.ren");
-        // endpoint.PrintObject();
-        await Task.CompletedTask;
-        // ReadEndpoint();
-        return 0;
+        else
+        {
+            // TODO: needs to do something here i guess
+            throw new Exception("please specify the endpoint to run with -e/--endpoint");
+        }
     }
 
     private static async Task<int> RunEndpoint(string name)
