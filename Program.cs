@@ -1,4 +1,4 @@
-﻿using Requina.Common.Extensions;
+﻿using Requina.Common.Services;
 using Requina.Helpers.Commands;
 
 class Program
@@ -11,28 +11,29 @@ class Program
         }
         catch (Exception ex)
         {
-            PrintError(ex);
+            var errorText = GetErrorText(ex);
+            Logger.LogError(errorText);
             return 1;
         }
     }
 
-    static void PrintError(Exception ex, int depth = -1)
+    static string GetErrorText(Exception ex, int depth = -1)
     {
-        Console.ForegroundColor = ConsoleColor.Red;
+        var text = "";
         if (depth > -1)
         {
-            Console.Write(string.Concat(Enumerable.Repeat("    ", depth)) + "└──>");
-            Console.WriteLine(ex.Message);
+            text += string.Concat(Enumerable.Repeat("    ", depth)) + "└──>";
+            text += ex.Message + "\n";
         }
         else
         {
-            Console.WriteLine(ex.Message);
+            text += ex.Message + "\n";
         }
         if (ex.InnerException is not null)
         {
-            PrintError(ex.InnerException, depth + 1);
+            text += GetErrorText(ex.InnerException, depth + 1);
         }
-        Console.ResetColor();
+        return text;
     }
 }
 

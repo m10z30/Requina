@@ -2,6 +2,11 @@ namespace Requina.Common.Constants;
 
 public static class AppConstants
 {
+    #if DEBUG
+    public static bool IsDebug = true; 
+    #else
+    public static bool IsDebug = false; 
+    #endif
     public static class Directories
     {
         public static readonly string Source = "src";
