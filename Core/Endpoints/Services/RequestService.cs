@@ -36,7 +36,7 @@ public class RequestService
         };
     }
 
-    public async Task<(int status, string responseBody)> MakeRequest(Endpoint endpoint)
+    public async Task<(int status, string responseBody, string? request, string requestHeaders)> MakeRequest(Endpoint endpoint)
     {
         var baseUri = GetBaseUri(endpoint);
         var content = await GetContent(endpoint);
@@ -50,7 +50,16 @@ public class RequestService
         HttpResponseMessage response = await client.SendAsync(request);
         PostProcessRequest(endpoint, request, activeEnv, response);
         string responseBody = await response.Content.ReadAsStringAsync();
-        return ((int)response.StatusCode, responseBody);
+        string? requestContent = null;
+        var requestHeaders = request.Headers
+            .Select(x => $"{x.Key}: {x.Value.First()}")
+            .ToArray();
+        var requestHeadersString = string.Join("\n", requestHeaders);
+        if (endpoint.Details.Method.HasBody())
+        {
+            requestContent = await request.Content!.ReadAsStringAsync();
+        }
+        return ((int)response.StatusCode, responseBody, requestContent, requestHeadersString);
     }
 
     private void PreProcessRequest(Endpoint endpoint, HttpRequestMessage request, Environments.Models.Environment environment)
@@ -79,7 +88,7 @@ public class RequestService
             }
             catch (Exception ex)
             {
-                throw new Exception($"error at in event syntax in {ev.FilePath}", ex);
+                throw new Exception($"error in event syntax in {ev.FilePath}", ex);
             }
         }
     }
@@ -111,7 +120,7 @@ public class RequestService
             }
             catch (Exception ex)
             {
-                throw new Exception($"error at in event syntax in {ev.FilePath}", ex);
+                throw new Exception($"error in event syntax in {ev.FilePath}", ex);
             }
         }
     }
@@ -266,7 +275,7 @@ public class RequestService
            string name,
            EndpointMethod method,
            string url,
-           Func<Task<(int status, string responseBody)>> requestFunc)
+           Func<Task<(int status, string responseBody, string? request, string requestHeaders)>> requestFunc)
     {
         // Print formatted request line
         Console.Write($"[REQUEST] {name,-25} ");
@@ -296,10 +305,9 @@ public class RequestService
         });
 
         var sw = Stopwatch.StartNew();
-
+        var (status, body, request, requestHeaders) = await requestFunc();
         try
         {
-            var (status, body) = await requestFunc();
             sw.Stop();
 
             spinnerTokenSource.Cancel();
@@ -319,6 +327,18 @@ public class RequestService
             Console.WriteLine(new string('-', 80));
             Console.ResetColor();
 
+            if (!string.IsNullOrEmpty(request))
+            {
+                Console.WriteLine("Request");
+                PrintJsonPretty(request);
+            }
+            Console.WriteLine(new string('-', 80));
+            Console.WriteLine("Request headers");
+            Console.WriteLine();
+            Console.WriteLine(requestHeaders);
+            Console.WriteLine(new string('-', 80));
+
+            Console.WriteLine("Response");
             PrintJsonPretty(body);
 
             Console.ForegroundColor = ConsoleColor.DarkGray;

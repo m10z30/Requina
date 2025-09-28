@@ -23,7 +23,7 @@ public static class RunCommand
     {
         await Task.CompletedTask;
         AppConstants.VariableConstants.BaseDirectory = string.IsNullOrWhiteSpace(options.Directory) ? Directory.GetCurrentDirectory() : options.Directory;
-        EnvHelper.GetActiveEnvironment();
+        EnvHelper.GetActiveEnvironment(true);
         Console.WriteLine(options.Directory);
         Console.WriteLine(options.Endpoint);
         if (!string.IsNullOrWhiteSpace(options.Endpoint))

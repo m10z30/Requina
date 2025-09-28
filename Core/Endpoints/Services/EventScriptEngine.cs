@@ -24,11 +24,12 @@ public class EventScriptEngine
         // Example: set env.name response.content.name
         var parts = line.Split(' ', 3);
         if (parts.Length != 3 || parts[0] != "set")
+        {
             throw new InvalidOperationException($"Invalid syntax: {line}");
+        }
 
         var target = parts[1];
         var source = parts[2];
-
         var value = ResolveValue(source);
         AssignValue(target, value);
     }
@@ -47,6 +48,10 @@ public class EventScriptEngine
             var doc = JsonDocument.Parse(json ?? "{}");
             return doc.RootElement.GetProperty(key).ToString();
         }
+        else
+        {
+            return path;
+        }
         throw new NotSupportedException($"Unknown source: {path}");
     }
 
@@ -58,9 +63,9 @@ public class EventScriptEngine
             _ctx.Env.UpdateEnvironment(key, (string)value!);
             return;
         }
-        if (path.StartsWith("request.header["))
+        if (path.StartsWith("request.headers["))
         {
-            var headerName = path.Substring("request.header[".Length).TrimEnd(']').Trim('"');
+            var headerName = path.Substring("request.headers[".Length).TrimEnd(']').Trim('"');
             _ctx.Request?.Headers.Add(headerName, value?.ToString() ?? "");
             return;
         }

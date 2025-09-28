@@ -1,4 +1,5 @@
-﻿using Requina.Common.Services;
+﻿using Requina.Common.Constants;
+using Requina.Common.Services;
 using Requina.Helpers.Commands;
 
 class Program
@@ -23,11 +24,25 @@ class Program
         if (depth > -1)
         {
             text += string.Concat(Enumerable.Repeat("    ", depth)) + "└──>";
-            text += ex.Message + "\n";
+            if (AppConstants.IsDebug)
+            {
+                text += ex.Message + " at " + ex.Source + "\n";
+            }
+            else
+            {
+                text += ex.Message + "\n";
+            }
         }
         else
         {
-            text += ex.Message + "\n";
+            if (AppConstants.IsDebug)
+            {
+                text += ex.Message + " at " + ex.Source + "\n";
+            }
+            else
+            {
+                text += ex.Message + "\n";
+            }
         }
         if (ex.InnerException is not null)
         {

@@ -77,7 +77,7 @@ public static class EnvHelper
         await File.WriteAllTextAsync(env.FilePath, newContent);
     }
 
-    public static Models.Environment GetActiveEnvironment(bool message = true)
+    public static Models.Environment GetActiveEnvironment(bool message = false)
     {
         var envs = GetEnvironments();
         var activeEnvs = new List<Models.Environment>();
