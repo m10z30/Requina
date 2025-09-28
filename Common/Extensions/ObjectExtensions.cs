@@ -5,13 +5,19 @@ namespace Requina.Common.Extensions;
 
 public static class ObjectExtensions
 {
-    public static void PrintObject(this object obj, int indent = 0, HashSet<object>? visited = null)
+    public static void PrintObject(this object obj, int indent = 0, int depth = 0, int maxDepth = 5, HashSet<object>? visited = null)
     {
         visited ??= [];
 
         if (obj == null)
         {
             Console.WriteLine($"null");
+            return;
+        }
+
+        if (depth > maxDepth)
+        {
+            Console.WriteLine($"{Indent(indent)}... (max depth reached)");
             return;
         }
 
@@ -46,7 +52,7 @@ public static class ObjectExtensions
             Console.WriteLine($"[");
             foreach (var item in enumerable)
             {
-                item.PrintObject(indent + 2, visited);
+                item.PrintObject(indent + 2, depth + 1, maxDepth, visited);
             }
             Console.WriteLine($"{Indent(indent)}]");
             return;
@@ -69,7 +75,7 @@ public static class ObjectExtensions
             }
 
             Console.Write($"{Indent(indent + 2)}{prop.Name} = ");
-            value!.PrintObject(indent + 2, visited);
+            value!.PrintObject(indent + 2, depth + 1, maxDepth, visited);
         }
 
         Console.WriteLine($"{Indent(indent)}}}");

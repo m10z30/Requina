@@ -67,7 +67,7 @@ you can specify the name of the endpoint inside the 'info' section with the para
             FileName = Path.GetFileName(filePath),
             Content = content,
             RenderedContent = renderedContent,
-            Sections = SectionHelper.GetSections(renderedContent)
+            Sections = SectionHelper.GetSections(filePath, renderedContent)
         };
     }
 
@@ -308,5 +308,57 @@ you can specify the name of the endpoint inside the 'info' section with the para
             return null;
         }
         return nameParameter.Content.Trim(); 
+    }
+
+    public static List<EndpointEvent> GetEvents(Endpoint endpoint)
+    {
+        var events = new List<EndpointEvent>();
+        var afterSection = GetSection(endpoint, "event.after");
+        if (afterSection is not null)
+        {
+            var afterEvent = new EndpointEvent
+            {
+                FilePath = endpoint.FilePath,
+                Type = EndpointEventType.After,
+                Lines = afterSection.Content.Split("\n").ToList(),
+            };
+            events.Add(afterEvent);
+        }
+        var beforeSection = GetSection(endpoint, "event.before");
+        if (beforeSection is not null)
+        {
+            var beforeEvent = new EndpointEvent
+            {
+                FilePath = endpoint.FilePath,
+                Type = EndpointEventType.Before,
+                Lines = beforeSection.Content.Split("\n").ToList(),
+            };
+            events.Add(beforeEvent);
+        }
+        var beforeEventFileName = $"{endpoint.Directory}/{endpoint.Name}.before.rev";
+        var afterEventFileName = $"{endpoint.Directory}/{endpoint.Name}.after.rev";
+        if (File.Exists(beforeEventFileName))
+        {
+            var content = File.ReadAllText(beforeEventFileName);
+            var beforeEvent = new EndpointEvent
+            {
+                FilePath = beforeEventFileName,
+                Type = EndpointEventType.Before,
+                Lines = content.Split("\n").ToList(),
+            };
+            events.Add(beforeEvent);
+        }
+        if (File.Exists(afterEventFileName))
+        {
+            var content = File.ReadAllText(afterEventFileName);
+            var afterEvent = new EndpointEvent
+            {
+                FilePath = afterEventFileName,
+                Type = EndpointEventType.After,
+                Lines = content.Split("\n").ToList(),
+            };
+            events.Add(afterEvent);
+        }
+        return events;
     }
 }

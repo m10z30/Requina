@@ -1,6 +1,7 @@
 using CommandLine;
 using Requina.Common.Constants;
 using Requina.Core.Endpoints.Helpers;
+using Requina.Core.Endpoints.Services;
 using Requina.Core.Environments.Helpers;
 using Requina.Helpers.Commands;
 
@@ -10,7 +11,7 @@ namespace Requina.Commands.Definitions;
 [Verb("run", HelpText = "Run the application")]
 public class RunOptions : BaseOptions
 {
-    [Option('e', "endpoint", Required = false, HelpText = "Specify the endpoint to connect to")]
+    [Option('e', "endpoint", Required = false, HelpText = "Specify the endpoint to run")]
     public string? Endpoint { get; set; }
     [Option('d', "dir", Required = false, HelpText = "Specify the directory of the requina project")]
     public string? Directory { get; set; }
@@ -23,6 +24,8 @@ public static class RunCommand
         await Task.CompletedTask;
         AppConstants.VariableConstants.BaseDirectory = string.IsNullOrWhiteSpace(options.Directory) ? Directory.GetCurrentDirectory() : options.Directory;
         EnvHelper.GetActiveEnvironment();
+        Console.WriteLine(options.Directory);
+        Console.WriteLine(options.Endpoint);
         if (!string.IsNullOrWhiteSpace(options.Endpoint))
         {
             return await RunEndpoint(options.Endpoint);
@@ -41,7 +44,8 @@ public static class RunCommand
         {
             throw new Exception("no endpoint with this name");
         }
-        await RequestHelper.Request(endpoint);
+        var requestService = new RequestService();
+        await requestService.Request(endpoint);
         return 0;
     }
 }

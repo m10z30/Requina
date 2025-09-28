@@ -5,25 +5,37 @@ namespace Requina.Core.Sections.Helpers;
 
 public static class SectionHelper
 {
-    public static List<Section> GetSections(string content)
+    public static List<Section> GetSections(string filePath, string content)
     {
-        // Match headers and content using regex
-        var matches = Regex.Matches(content, @"^#(.+)\n((?:.+\n?)*)", RegexOptions.Multiline);
-
-        var sections = new List<Section>();
-
-        foreach (Match match in matches)
+        try
         {
-            var sectionName = match.Groups[1].Value.Trim();
-            var sectionContent = match.Groups[2].Value.Trim();
-            var section = new Section()
+            // Match headers and content using regex
+            var matches = Regex.Matches(content, @"^#(.+)\n((?:.+\n?)*)", RegexOptions.Multiline);
+
+            var sections = new List<Section>();
+
+            foreach (Match match in matches)
             {
-                Name = sectionName,
-                Content = sectionContent
-            };
-            sections.Add(section);
+                var sectionName = match.Groups[1].Value.Trim();
+                var sectionContent = match.Groups[2].Value.Trim();
+                var section = new Section()
+                {
+                    Name = sectionName,
+                    Content = sectionContent,
+                };
+                // TODO: make sure this valdate in a better way, modify the AppConstants.Sections or make a helper method.
+                if (!sectionName.Contains("event") && !sectionName.Contains("body"))
+                {
+                    section.Parameters = GetParameters(sectionContent);
+                }
+                sections.Add(section);
+            }
+            return sections;
         }
-        return sections;
+        catch (Exception ex)
+        {
+            throw new Exception($"error at {filePath}", ex);
+        }
     }
 
     public static List<SectionParameter> GetParameters(string content)

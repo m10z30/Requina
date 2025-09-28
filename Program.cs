@@ -1,4 +1,5 @@
-﻿using Requina.Helpers.Commands;
+﻿using Requina.Common.Extensions;
+using Requina.Helpers.Commands;
 
 class Program
 {
@@ -10,12 +11,28 @@ class Program
         }
         catch (Exception ex)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("error: ");
-            Console.WriteLine(ex.Message);
-            Console.ResetColor();
+            PrintError(ex);
             return 1;
         }
+    }
+
+    static void PrintError(Exception ex, int depth = -1)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        if (depth > -1)
+        {
+            Console.Write(string.Concat(Enumerable.Repeat("    ", depth)) + "└──>");
+            Console.WriteLine(ex.Message);
+        }
+        else
+        {
+            Console.WriteLine(ex.Message);
+        }
+        if (ex.InnerException is not null)
+        {
+            PrintError(ex.InnerException, depth + 1);
+        }
+        Console.ResetColor();
     }
 }
 

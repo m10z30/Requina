@@ -6,6 +6,29 @@ namespace Requina.Core.Environments.Helpers;
 public static class EnvHelper
 {
 
+    public static void UpdateEnvironment(this Models.Environment env, string key, string value)
+    {
+        var found = false;
+        foreach (var envValue in env.Values)
+        {
+            if (envValue.Name == key)
+            {
+                found = true;
+                envValue.Value = value;
+                break;
+            }
+        }
+        if (!found)
+        {
+            env.Values.Add(new EnvValue
+            {
+                Name = key,
+                Value = value
+            });
+        }
+        WriteEnvironment(env);
+    }
+
     public static async Task UpdateActiveEnvironmentAsync(string key, string value)
     {
         var env = GetActiveEnvironment();
@@ -28,6 +51,18 @@ public static class EnvHelper
             });
         }
         await WriteEnvironmentAsync(env);
+    }
+
+    private static void WriteEnvironment(Models.Environment env)
+    {
+        if (!File.Exists(env.FilePath))
+        {
+            throw new Exception("environment does not exists");
+        }
+        Console.WriteLine($"is active: {env.IsActive}");
+        var newContent = env.IsActive ? "!active\n" : "";
+        newContent += string.Join("\n", env.Values.Select(x => $"{x.Name}={x.Value}").ToArray());
+        File.WriteAllText(env.FilePath, newContent);
     }
 
     private static async Task WriteEnvironmentAsync(Models.Environment env)

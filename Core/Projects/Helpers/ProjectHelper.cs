@@ -1,4 +1,5 @@
 using Requina.Common.Constants;
+using Requina.Core.Endpoints.Models;
 using Requina.Core.Projects.Models;
 
 namespace Requina.Core.Projects.Helpers;
@@ -46,9 +47,39 @@ public static class ProjectHelper
 
     public static string[] GetEndpointsFiles(string directory)
     {
-        var files = Directory.GetFiles(directory);
-            // .Where(x => Path.GetExtension(x) == "." + AppConstants.Endpoints.FileExtension)
-            // .ToArray();
+        var files = Directory.GetFiles(directory)
+            .Where(x => Path.GetExtension(x).TrimStart('.') == AppConstants.Endpoints.FileExtension)
+            .ToArray();
         return files;
+    }
+
+    public static List<EndpointEvent> GetGlobalEndpointEvents()
+    {
+        var events = new List<EndpointEvent>();
+        var beforeFileName = Path.Join(AppConstants.VariableConstants.BaseDirectory, AppConstants.Directories.Source, "before.rev");
+        var afterFileName = Path.Join(AppConstants.VariableConstants.BaseDirectory, AppConstants.Directories.Source, "after.rev");
+        if (File.Exists(beforeFileName))
+        {
+            var content = File.ReadAllText(beforeFileName);
+            var beforeEvent = new EndpointEvent
+            {
+                FilePath = beforeFileName,
+                Type = EndpointEventType.Before,
+                Lines = content.Split("\n").ToList(),
+            };
+            events.Add(beforeEvent);
+        }
+        if (File.Exists(afterFileName))
+        {
+            var content = File.ReadAllText(afterFileName);
+            var afterEvent = new EndpointEvent
+            {
+                FilePath = afterFileName,
+                Type = EndpointEventType.After,
+                Lines = content.Split("\n").ToList(),
+            };
+            events.Add(afterEvent);
+        }
+        return events;
     }
 }

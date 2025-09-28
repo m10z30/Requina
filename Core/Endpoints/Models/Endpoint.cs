@@ -17,6 +17,7 @@ public enum EndpointMethod
 public class Endpoint
 {
     public required string FilePath { get; set; }
+    public string Directory => Path.GetDirectoryName(FilePath) ?? throw new Exception($"something went wrong when getting directory name of {FilePath}");
     public required string FileName { get; set; }
     public string Name => InfoName ?? Path.GetFileName(FilePath);
     public string? InfoName => EndpointHelper.GetInfoName(this);
@@ -24,6 +25,20 @@ public class Endpoint
     public required string RenderedContent { get; set; }
     public required List<Section> Sections { get; set; }
     public EndpointDetails Details => EndpointHelper.GetDetails(this);
+    public List<EndpointEvent> Events => EndpointHelper.GetEvents(this);
+}
+
+public enum EndpointEventType
+{
+    Before,
+    After
+}
+
+public class EndpointEvent
+{
+    public required string FilePath { get; set; }
+    public EndpointEventType Type { get; set; }
+    public List<string> Lines { get; set; } = [];
 }
 
 public class EndpointDetails
