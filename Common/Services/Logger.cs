@@ -16,7 +16,7 @@ public static class Logger
     {
         return logLevel switch
         {
-            LogLevel.Debug => ConsoleColor.Gray,
+            LogLevel.Debug => ConsoleColor.DarkMagenta,
             LogLevel.Info  => ConsoleColor.Green,
             LogLevel.Warn  => ConsoleColor.Yellow,
             LogLevel.Error => ConsoleColor.Red,
@@ -54,7 +54,7 @@ public static class Logger
     public static void LogError(string message)
     {
         Console.ForegroundColor = GetColor(LogLevel.Error); 
-        Console.Write("error: ");
+        Console.Write("\nerror: ");
         Console.ResetColor();
         Console.WriteLine(message);
     }
