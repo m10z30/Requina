@@ -5,6 +5,7 @@
 project.lock.json
 .DS_Store
 *.pyc
+openapi.json
 
 # Visual Studio Code
 .vscode
