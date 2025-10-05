@@ -59,7 +59,6 @@ public static class EnvHelper
         {
             throw new Exception("environment does not exists");
         }
-        Console.WriteLine($"is active: {env.IsActive}");
         var newContent = env.IsActive ? "!active\n" : "";
         newContent += string.Join("\n", env.Values.Select(x => $"{x.Name}={x.Value}").ToArray());
         File.WriteAllText(env.FilePath, newContent);
@@ -71,7 +70,6 @@ public static class EnvHelper
         {
             throw new Exception("environment does not exists");
         }
-        Console.WriteLine($"is active: {env.IsActive}");
         var newContent = env.IsActive ? "!active\n" : "";
         newContent += string.Join("\n", env.Values.Select(x => $"{x.Name}={x.Value}").ToArray());
         await File.WriteAllTextAsync(env.FilePath, newContent);
