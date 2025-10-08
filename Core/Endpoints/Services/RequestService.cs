@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Requina.Common.Constants;
 using Requina.Common.Helpers;
 using Requina.Core.Endpoints.Helpers;
 using Requina.Core.Endpoints.Models;
@@ -59,6 +60,7 @@ public class RequestService
         {
             requestContent = await request.Content!.ReadAsStringAsync();
         }
+        await endpoint.WriteResponseAsync(response.StatusCode, responseBody);
         return ((int)response.StatusCode, responseBody, requestContent, requestHeadersString);
     }
 
@@ -298,7 +300,10 @@ public class RequestService
         {
             while (!spinnerTokenSource.Token.IsCancellationRequested)
             {
-                Console.SetCursorPosition(cursorLeft, cursorTop);
+                if (!AppConstants.IsDebug)
+                {
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                }
                 Console.Write($"[... {spinner[spinnerIndex++ % spinner.Length]}]");
                 await Task.Delay(100);
             }
@@ -314,7 +319,10 @@ public class RequestService
             await spinnerTask;
 
             // Move back and print result
-            Console.SetCursorPosition(cursorLeft, cursorTop);
+            if (!AppConstants.IsDebug)
+            {
+                Console.SetCursorPosition(cursorLeft, cursorTop);
+            }
             Console.ForegroundColor = status >= 200 && status < 300 ? ConsoleColor.Green : ConsoleColor.Red;
             Console.Write($"[ {(status >= 200 && status < 300 ? "OK" : "ERR")} ]");
             Console.Write($" {status} {(HttpStatusCode)status}");
@@ -330,7 +338,7 @@ public class RequestService
             if (!string.IsNullOrEmpty(request))
             {
                 Console.WriteLine("Request");
-                PrintJsonPretty(request);
+                JsonHelper.PrintJsonPretty(request);
             }
             Console.WriteLine(new string('-', 80));
             Console.WriteLine("Request headers");
@@ -339,7 +347,7 @@ public class RequestService
             Console.WriteLine(new string('-', 80));
 
             Console.WriteLine("Response");
-            PrintJsonPretty(body);
+            JsonHelper.PrintJsonPretty(body);
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine(new string('-', 80));
@@ -360,28 +368,6 @@ public class RequestService
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Error: {ex.Message}");
-            Console.ResetColor();
-        }
-    }
-
-    private static void PrintJsonPretty(string json)
-    {
-        try
-        {
-            var parsed = System.Text.Json.JsonDocument.Parse(json);
-            var pretty = System.Text.Json.JsonSerializer.Serialize(parsed, new System.Text.Json.JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine(pretty);
-            Console.ResetColor();
-        }
-        catch
-        {
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine(json); // fallback for non-JSON
             Console.ResetColor();
         }
     }

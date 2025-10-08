@@ -1,5 +1,3 @@
-using Requina.Core.Sections.Helpers;
-
 namespace Requina.Core.Sections.Models;
 
 public class Section

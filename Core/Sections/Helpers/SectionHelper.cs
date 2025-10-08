@@ -24,7 +24,7 @@ public static class SectionHelper
                     Content = sectionContent,
                 };
                 // TODO: make sure this valdate in a better way, modify the AppConstants.Sections or make a helper method.
-                if (!sectionName.Contains("event") && !sectionName.Contains("body"))
+                if (!sectionName.Contains("event") && !sectionName.Contains("body") && !sectionName.Contains("Response"))
                 {
                     section.Parameters = GetParameters(sectionContent);
                 }

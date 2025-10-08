@@ -29,5 +29,45 @@ public static class JsonHelper
         }
         return current;
     }
+
+    public static void PrintJsonPretty(string json)
+    {
+        try
+        {
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+            var pretty = System.Text.Json.JsonSerializer.Serialize(parsed, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine(pretty);
+            Console.ResetColor();
+        }
+        catch
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine(json); // fallback for non-JSON
+            Console.ResetColor();
+        }
+    }
+
+    public static string GetJsonPretty(string json)
+    {
+        try
+        {
+            var parsed = System.Text.Json.JsonDocument.Parse(json);
+            var pretty = System.Text.Json.JsonSerializer.Serialize(parsed, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+            return pretty;
+        }
+        catch
+        {
+            // fallback for non-JSON
+            return json;
+        }
+    }
 }
 

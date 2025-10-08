@@ -1,3 +1,5 @@
+using Requina.Common.Helpers;
+using Requina.Common.Services;
 using Requina.Core.Endpoints.Helpers;
 using Requina.Core.Sections.Models;
 
@@ -26,6 +28,27 @@ public class Endpoint
     public required List<Section> Sections { get; set; }
     public EndpointDetails Details => EndpointHelper.GetDetails(this);
     public List<EndpointEvent> Events => EndpointHelper.GetEvents(this);
+
+    public async Task WriteResponseAsync(System.Net.HttpStatusCode statusCode, string responseBody)
+    {
+        var sectionName = $"Response - {(int)statusCode} {statusCode}";
+        var prettyJson = JsonHelper.GetJsonPretty(responseBody);
+        Logger.LogDebug($"secionName: {sectionName}");
+        var existingSection = Sections.Where(x => x.Name == sectionName).FirstOrDefault();
+        if (existingSection != null)
+        {
+            existingSection.Content = prettyJson;
+        }
+        else
+        {
+            Sections.Add(new Section
+            {
+                Name = sectionName,
+                Content = prettyJson,
+            });
+        }
+        await EndpointHelper.UpdateSectionsAsync(this);
+    }
 }
 
 public enum EndpointEventType

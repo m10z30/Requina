@@ -204,14 +204,14 @@ you can specify the name of the endpoint inside the 'info' section with the para
             var json = true;
             var content = jsonSection.Content.Trim();
             try
-                {
-                    JsonDocument.Parse(content);
-                    json = true;
-                }
-                catch
-                {
-                    json = false;
-                }
+            {
+                JsonDocument.Parse(content);
+                json = true;
+            }
+            catch
+            {
+                json = false;
+            }
             return new()
             {
                 Type = json ? BodyType.Json : BodyType.Text,
@@ -280,7 +280,7 @@ you can specify the name of the endpoint inside the 'info' section with the para
         }
         return method;
     }
-    
+
     public static Section GetInfoSection(Endpoint endpoint)
     {
         var infoSection = GetSection(endpoint, AppConstants.Sections.Info.Name);
@@ -290,7 +290,7 @@ you can specify the name of the endpoint inside the 'info' section with the para
         }
         return infoSection;
     }
-    
+
     public static Section? GetSection(Endpoint endpoint, string name)
     {
         var section = endpoint.Sections
@@ -307,7 +307,7 @@ you can specify the name of the endpoint inside the 'info' section with the para
         {
             return null;
         }
-        return nameParameter.Content.Trim(); 
+        return nameParameter.Content.Trim();
     }
 
     public static List<EndpointEvent> GetEvents(Endpoint endpoint)
@@ -361,4 +361,24 @@ you can specify the name of the endpoint inside the 'info' section with the para
         }
         return events;
     }
+
+    public static async Task UpdateSectionsAsync(Endpoint endpoint)
+    {
+        var unRenderedSections = SectionHelper.GetSections(endpoint.FilePath, endpoint.Content);
+        foreach (var section in endpoint.Sections)
+        {
+            var hasSection = unRenderedSections.Any(x => x.Name == section.Name);
+            if (!hasSection)
+            {
+                unRenderedSections.Add(section);
+            }
+        }
+        string fullContent = "";
+        foreach (var section in unRenderedSections)
+        {
+            fullContent += $"# {section.Name}\n{section.Content}\n\n";
+        }
+        await File.WriteAllTextAsync(endpoint.FilePath, fullContent);
+    }
+
 }
