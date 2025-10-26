@@ -143,7 +143,7 @@ public class RequestService
             {
                 BodyType.Json      => JsonBodyRequestContent(endpoint),
                 BodyType.Text      => TextBodyRequestContent(endpoint),
-                BodyType.FormData  => await FromDataRequestContent(endpoint),
+                BodyType.FormData  => await FromDataRequestContentAsync(endpoint),
                 BodyType.XFormData => XFormDataRequestContent(endpoint),
                 null               => throw new Exception("body type is null"),
                 _                  => throw new Exception($"no such request body type: {endpoint.Details.Body.Type}")
@@ -223,7 +223,7 @@ public class RequestService
         return content;
     }
 
-    private async Task<MultipartFormDataContent> FromDataRequestContent(Endpoint endpoint)
+    private async Task<MultipartFormDataContent> FromDataRequestContentAsync(Endpoint endpoint)
     {
         if (endpoint.Details.Body is null || endpoint.Details.Body.Entries is null)
         {
