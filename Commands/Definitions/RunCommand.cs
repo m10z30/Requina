@@ -11,7 +11,7 @@ namespace Requina.Commands.Definitions;
 [Verb("run", HelpText = "Run the application")]
 public class RunOptions : BaseOptions
 {
-    [Option('e', "endpoint", Required = false, HelpText = "Specify the endpoint to run")]
+    [Value(0, MetaName = "endpoint", HelpText = "Specify the endpoint to run", Required = true)]
     public string? Endpoint { get; set; }
     [Option('d', "dir", Required = false, HelpText = "Specify the directory of the requina project")]
     public string? Directory { get; set; }
@@ -33,7 +33,7 @@ public static class RunCommand
         else
         {
             // TODO: needs to do something here i guess
-            throw new Exception("please specify the endpoint to run with -e/--endpoint");
+            throw new Exception("please specify the endpoint to run");
         }
     }
 
