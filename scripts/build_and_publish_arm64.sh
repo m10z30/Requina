@@ -5,7 +5,7 @@ set -e
 dotnet publish -c Release -r osx-arm64 --self-contained true \
   /p:PublishSingleFile=true \
   /p:IncludeAllContentInSingleFile=true \
-  /p:EnableCompressionInSingleFile=false
+  /p:EnableCompressionInSingleFile=true
 
 # Copy to /usr/local/bin
 APP_NAME="requina"
